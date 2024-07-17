@@ -60,9 +60,6 @@ LOCAL_APPS = [
     'core',
 ]
 
-# Django 프로젝트 실제 앱 목록
-INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
-
 # 미들웨어 목록
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -81,6 +78,10 @@ if DEBUG:
     MIDDLEWARE += [
         'debug_toolbar.middleware.DebugToolbarMiddleware',
     ]
+
+# Django 프로젝트 실제 앱 목록
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
+
 
 ROOT_URLCONF = 'simple_board_backend.urls'
 
@@ -161,6 +162,19 @@ STATIC_ROOT = os.path.join(ROOT_DIR, '.static_root')
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
+# 나중에 로그인 인증으로 swagger를 볼수있게 할것.
+LOGIN_URL = '/admin/login'
+LOGOUT_URL = '/admin/logout'
+
+# swagger 세팅
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'basic': {
+            'type': 'basic',
+        }
+    },
+}
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # drf 파서관련 세팅 추가
@@ -170,5 +184,5 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.FormParser',
         'rest_framework.parsers.MultiPartParser',
         'rest_framework.parsers.FileUploadParser',
-    ]
+    ],
 }
