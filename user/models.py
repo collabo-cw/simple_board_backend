@@ -3,11 +3,17 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from uuid import uuid4
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, password=None, **extra_fields):
+    '''
+        View에서 user_data를 전달 받으면
+        받은것으로 DB로 create함
+    '''
+    def create_user(self, **user_data):
+        email = user_data.get('email')
+        password = user_data.get('password')
         if not email:
             raise ValueError('이메일 주소를 입력해야합니다.')
         email = self.normalize_email(email)
-        user = self.model(email=email, **extra_fields)
+        user = self.model(email=email, **user_data)
         user.set_password(password)
         user.save(using=self._db)
         return user
