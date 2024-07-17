@@ -57,6 +57,7 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     'user',
+    'core',
 ]
 
 # Django 프로젝트 실제 앱 목록
