@@ -7,12 +7,29 @@ DRF의 익숙해지기 위해 만듦
 ## 구조
 ```
 ┌── core
+│   │   ├── migrations
+│   │   │   └── ...
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── models.py
+│   ├── serializers.py
+│   └── views.py
 ├── simple_board_backend
 │   ├── __init__.py
 │   ├── asgi.py
 │   ├── settings.py
 │   ├── urls.py
 │   └── wsgi.py
+├── user
+│   │   ├── migrations
+│   │   │   └── ...
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── models.py
+│   ├── serializers.py
+│   └── views.py
 ├── .gitignore
 ├── LICENSE
 ├── manage.py
@@ -41,7 +58,7 @@ Postgresql version 3.10 ++
 > 추천 or 좋아요 < 이부분은 아직 구현할지 미지수
 
 ## 기술 스택
-Django 3.2 , DRF 3.15.2
+Django 4.2++ , DRF 3.15 ++
 
 ## 구현할 기능
 
