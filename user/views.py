@@ -22,6 +22,7 @@ from .serializers import UserSignUpRequestSerializer
 )
 @api_view(["POST"])
 def user_sign_up(request: Request):
+    # 요청 데이터 검증
     request_validator = UserSignUpRequestSerializer(data=request.data)
     if not request_validator.is_valid():
         print('양식에 맞지 않습니다.')
@@ -29,8 +30,10 @@ def user_sign_up(request: Request):
         return APIResponseHandler.CODE_0002.get_error_response()
 
     print(request_validator.validated_data)
+    # 유저 데이터 리스트로 만들고
     user_data:list = request_validator.get_data_for_user_create()
 
+    # 회원인지 아닌지 체크
     from .models import User
     user_qs = User.objects.filter(
         email=request_validator.data.get('email'),
@@ -40,6 +43,7 @@ def user_sign_up(request: Request):
         print('이미 존재하는 유저입니다.')
         return APIResponseHandler.CODE_0005.get_error_response()
 
+    # 유저모델에 유저데이터 리스트를 전달한다.
     user_manager = User.objects
     user = user_manager.create_user(**user_data)
     print('생성된 유저 : ', user)
