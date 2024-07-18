@@ -47,11 +47,12 @@ class UserSignUpRequestSerializer(serializers.Serializer):
         """
         유저 생성에 필요한 데이터를 반환하는 메서드
         """
+
         return {
             'email': self.validated_data.get('email'),
             'password': self.validated_data.get('password'),
             'phone': self.validated_data.get('phone'),
             'name': self.validated_data.get('name'),
-            'birthday': self.validated_data.get('birthday'),
+            'birthday': self.validated_data.get('birthday').strftime('%Y%m%d'),
             'gender': self.validated_data.get('gender'),
         }

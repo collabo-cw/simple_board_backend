@@ -12,16 +12,15 @@ class UserManager(BaseUserManager):
         password = user_data.get('password')
         if not email:
             raise ValueError('이메일 주소를 입력해야합니다.')
-        email = self.normalize_email(email)
-        user = self.model(email=email, **user_data)
+        user = self.model(**user_data)
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, password=None, **extra_fields):
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
-        return self.create_user(email, password, **extra_fields)
+    def create_superuser(self, **user_data):
+        user_data.setdefault('is_staff', True)
+        user_data.setdefault('is_superuser', True)
+        return self.create_user(user_data)
 
 class User(AbstractBaseUser, PermissionsMixin):
     last_login = None
@@ -125,4 +124,4 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name_plural = '유저'
 
     def __str__(self):
-        return f"{self.email} {self.name} {self.role}"
+        return f"등록된 이메일 ={self.email}, 등록된 이름 ={self.name}, 등록된 역할={self.role}"
