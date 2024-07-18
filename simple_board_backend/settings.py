@@ -29,10 +29,12 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 # 허용된 호스트 목록
-ALLOWED_HOSTS = [
-    '127.0.0.1',
-    'localhost',
-]
+# ALLOWED_HOSTS = [
+#     '127.0.0.1',
+#     'localhost',
+# ]
+
+ALLOWED_HOSTS = ['*']
 
 # 디버그 툴바용 내부 IP 목록
 INTERNAL_IPS = [
@@ -53,6 +55,7 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     'rest_framework',
     'drf_yasg',
+    'corsheaders'
 ]
 
 LOCAL_APPS = [
@@ -62,6 +65,7 @@ LOCAL_APPS = [
 
 # 미들웨어 목록
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -174,6 +178,20 @@ SWAGGER_SETTINGS = {
         }
     },
 }
+
+
+
+# 이렇게 허용할 IP를 지정해둬야 어느정도 보안이 가능해진다
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3000"
+# ]
+# 임시로 모두 허용
+CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOW_METHODS = [
+    'GET',
+    'POST',
+]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
