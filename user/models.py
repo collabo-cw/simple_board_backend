@@ -20,7 +20,7 @@ class UserManager(BaseUserManager):
     def create_superuser(self, **user_data):
         user_data.setdefault('is_staff', True)
         user_data.setdefault('is_superuser', True)
-        return self.create_user(user_data)
+        return self.create_user(**user_data)
 
 class User(AbstractBaseUser, PermissionsMixin):
     last_login = None
