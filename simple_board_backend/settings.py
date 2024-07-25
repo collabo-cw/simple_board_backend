@@ -206,17 +206,16 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.FileUploadParser',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        # stateless jwt 채택
+        # 따라서 로그인을 했는지 지속적으로 확인할 필요도 없고,
+        # 디비에 접속할 일도 없어짐.
         'rest_framework_simplejwt.authentication.JWTStatelessUserAuthentication',
     ),
 }
 
+AUTH_USER_MODEL = 'user.user'
+
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5), # 액세스 토큰의 유효기간을 지정하는 객체
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60), # 액세스 토큰의 유효기간을 지정하는 객체
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1), # 새로 고침 토큰의 유효기간을 지정하는 객체
-    'ROTATE_REFRESH_TOKENS': False,
-    'BLACKLIST_AFTER_ROTATION': True,
-    'ALGORITHM': 'HS256',
-    'SIGNING_KEY': SECRET_KEY,
-    "USER_ID_FIELD": "email",
 }

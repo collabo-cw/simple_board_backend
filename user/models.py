@@ -24,7 +24,7 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     last_login = None
-    USERNAME_FIELD = 'internal_uuid'
+    USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
     user_role_choices = (
