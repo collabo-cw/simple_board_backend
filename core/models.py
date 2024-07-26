@@ -2,6 +2,7 @@ import enum
 import json
 from rest_framework import status
 from dataclasses import dataclass
+from django.db import models
 
 # Create your models here.
 
@@ -237,3 +238,41 @@ class APIResponseHandler(metaclass=StatusHandlerMeta):
     @classmethod
     def get_all_message(cls):
         return [v.message for k, v in cls.__dict__.items() if 'CODE_' in k]
+
+
+# 코드 베이스 모델을 위한 추상모델
+class CodeBaseAbstractModel(models.Model):
+    code = models.CharField(
+        max_length=20,
+        verbose_name='코드',
+        unique=True,
+    )
+    name = models.CharField(
+        max_length=20,
+        verbose_name='이름'
+    )
+
+    description = models.TextField(
+        default="",
+        verbose_name="설명"
+    )
+
+    is_activate = models.BooleanField(
+        default=True,
+        verbose_name='활성화 여부'
+    )
+
+    created = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="생성일시"
+    )
+    updated = models.DateTimeField(
+        auto_now=True,
+        verbose_name="수정일시"
+    )
+
+    def __str__(self):
+        return f"{self.code}/{self.name}"
+
+    class Meta:
+        abstract = True
