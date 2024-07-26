@@ -2,6 +2,9 @@ from rest_framework import serializers
 from .models import User
 
 class UserSignUpRequestSerializer(serializers.Serializer):
+    '''
+        유저 회원가입 요청 시리얼라이저
+    '''
     # 이메일
     email = serializers.EmailField(
         help_text="사용할 이메일 주소",
