@@ -63,6 +63,7 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     'user',
     'core',
+    'board',
 ]
 
 # 미들웨어 목록
