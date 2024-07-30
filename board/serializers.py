@@ -2,7 +2,7 @@ from drf_yasg.utils import swagger_serializer_method
 from rest_framework import serializers
 
 from core.serializers import ResponseBaseSerializer
-from core.utils import EnumChoice
+from core.utils import EnumChoice, validate_file_extension
 from .models import Board
 
 class BoardListUpRequestSerializer(serializers.Serializer):
@@ -20,10 +20,8 @@ class BoardListUpRequestSerializer(serializers.Serializer):
         ABC = '글자순'
         HITS = '조회수 기준'
 
-    category_type = serializers.ListSerializer(
-        child=serializers.ChoiceField(
-            choices=BoardCategoryEnum.get_choice()
-        ),
+    category_type = serializers.ChoiceField(
+        choices=BoardCategoryEnum.get_choice(),
         help_text='게시판 타입',
     )
 
@@ -52,7 +50,7 @@ class BoardListUpRequestSerializer(serializers.Serializer):
 class BoardListItemSerializer(serializers.ModelSerializer):
     # 작성자
     def get_author(self, instance):
-        return instance.user.name
+        return instance.author.name
 
     # 게시글 제목
     def get_title(self, instance):
@@ -127,6 +125,9 @@ class BoardListUpResponseSerializer(ResponseBaseSerializer):
             serializer_or_field=BoardListItemSerializer(many=True)
         )
         def get_item_list(self, instance):
+            if isinstance(instance, Board):
+                instance = [instance]
+
             return BoardListItemSerializer(
                 instance,
                 many=True,
@@ -142,3 +143,39 @@ class BoardListUpResponseSerializer(ResponseBaseSerializer):
         item_list = serializers.SerializerMethodField()
 
     result = BoardListUpResponseBody()
+
+# 게시판 등록 요청 시리얼라이저
+class BoardRegisterRequestSerializer(serializers.Serializer):
+    '''
+        게시판 등록 요청 시리얼라이저
+    '''
+
+    class BoardCategoryEnum(EnumChoice):
+        NOTICE = '공지사항'
+        GENERAL = '일반 게시판'
+        QNA = '질문 게시판'
+
+    category = serializers.ChoiceField(
+        choices=BoardCategoryEnum.get_choice(),
+        help_text='카테고리',
+    )
+
+    user_id = serializers.UUIDField(
+        help_text='유저 UUID',
+    )
+
+    title = serializers.CharField(
+        help_text='게시글 제목',
+    )
+
+    content = serializers.CharField(
+        help_text='게시글 내용'
+    )
+
+    file = serializers.ListSerializer(
+        child=serializers.FileField(validators=[validate_file_extension]),
+        help_text='첨부파일',
+        required=False,
+        allow_empty=True,
+        default=list
+    )
