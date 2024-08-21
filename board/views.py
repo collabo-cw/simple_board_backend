@@ -6,8 +6,7 @@ from core.models import APIResponseHandler
 from board.serializers import BoardListUpRequestSerializer, BoardListUpResponseSerializer, \
     BoardRegisterRequestSerializer
 from core.utils import calculate_pagination_max_page, set_atomic_transaction
-from .models import Board
-from user.models import User
+
 
 #게시판 목록 조회 API
 @swagger_auto_schema(
@@ -38,6 +37,7 @@ def board_list_up(request: Request):
     categorize_type = request_validator.data.get('categorize_type')
     desc = request_validator.data.get('desc', False)
 
+    from .models import Board
     board_qs = Board.objects.filter(
         category=category
     )
@@ -122,26 +122,38 @@ def board_register(request: Request):
 
     category = request_validator.data.get('category')
     user_id = request_validator.data.get('user_id')
+    guest_id = request_validator.data.get('guest_id')
+    password = request_validator.data.get('password')
     title = request_validator.data.get('title')
     content = request_validator.data.get('content')
     file = request_validator.data.get('file')
+
+    # 유저가 없을수도 있음
+    from user.models import User
+    from .models import Board, Attachment
 
     user_qs = User.objects.filter(
         external_uuid=user_id,
         is_active=True
     )
-    if not user_qs.exists():
-        return APIResponseHandler.CODE_0003.get_status_response()
-
-    user = user_qs.first()
-
-    from .models import Board, Attachment
-    board_instance = Board.objects.create(
-        category=category,
-        author=user,
-        title=title,
-        content=content,
-    )
+    if user_qs.exists():
+        user = user_qs.first()
+        board_instance = Board.objects.create(
+            category=category,
+            author=user,
+            title=title,
+            content=content,
+        )
+    else:
+        if not guest_id or password:
+            return APIResponseHandler.CODE_0001.get_status_response()
+        board_instance = Board.objects.create(
+            category=category,
+            guest_author=guest_id,
+            password=password,
+            title=title,
+            content=content,
+        )
 
     if file:
         for i,obj in enumerate(file):

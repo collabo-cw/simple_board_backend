@@ -29,7 +29,7 @@ class BoardListUpRequestSerializer(serializers.Serializer):
         min_value=10,
         max_value=100,
         help_text='페이지 사이즈',
-        required=False,
+        required=True,
         default=10
     )
 
@@ -38,19 +38,29 @@ class BoardListUpRequestSerializer(serializers.Serializer):
             choices=CategorizeEnum.get_choice()
         ),
         help_text='분류 기준',
-        required=False,
+        required=True,
     )
 
     desc = serializers.BooleanField(
         help_text='역순 flag',
-        required=False,
+        required=True,
         default=False,
     )
 
 class BoardListItemSerializer(serializers.ModelSerializer):
     # 작성자
     def get_author(self, instance):
-        return instance.author.name
+        if not instance.author.name:
+            return None
+        else:
+            return instance.author.name
+
+    # 작성자 비회원
+    def get_guest_author(self, instance):
+        if not instance.guest_author:
+            return None
+        else:
+            return instance.guest_author
 
     # 게시글 제목
     def get_title(self, instance):
@@ -66,6 +76,10 @@ class BoardListItemSerializer(serializers.ModelSerializer):
 
     author = serializers.SerializerMethodField(
         help_text='작성자'
+    )
+
+    guest_author = serializers.SerializerMethodField(
+        help_text='작성자(비회원)'
     )
 
     title = serializers.SerializerMethodField(
@@ -84,6 +98,7 @@ class BoardListItemSerializer(serializers.ModelSerializer):
         model = Board
         fields = (
             'author',
+            'guest_author'
             'title',
             'created_at',
             'view_count'
@@ -162,6 +177,19 @@ class BoardRegisterRequestSerializer(serializers.Serializer):
 
     user_id = serializers.UUIDField(
         help_text='유저 UUID',
+        allow_null=True
+    )
+
+    guest_id = serializers.CharField(
+        max_length=10,
+        help_text='비회원 작성자',
+        allow_null=True
+    )
+
+    password = serializers.CharField(
+        max_length=15,
+        help_text='비회원 암호',
+        allow_null=True
     )
 
     title = serializers.CharField(
