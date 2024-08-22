@@ -5,6 +5,12 @@ from core.serializers import ResponseBaseSerializer
 from core.utils import EnumChoice, validate_file_extension
 from .models import Board
 
+
+class BoardCategoryEnum(EnumChoice):
+    NOTICE = '공지사항'
+    GENERAL = '일반 게시판'
+    QNA = '질문 게시판'
+
 class BoardListUpRequestSerializer(serializers.Serializer):
     '''
         게시판 목록 요청 시리얼라이저
@@ -48,31 +54,38 @@ class BoardListUpRequestSerializer(serializers.Serializer):
     )
 
 class BoardListItemSerializer(serializers.ModelSerializer):
+
+    def get_id(self, instance:Board):
+        return instance.pk
     # 작성자
-    def get_author(self, instance):
+    def get_author(self, instance:Board):
         if not instance.author.name:
             return None
         else:
             return instance.author.name
 
     # 작성자 비회원
-    def get_guest_author(self, instance):
+    def get_guest_author(self, instance:Board):
         if not instance.guest_author:
             return None
         else:
             return instance.guest_author
 
     # 게시글 제목
-    def get_title(self, instance):
+    def get_title(self, instance:Board):
         return instance.title
 
     # 생성일
-    def get_created_at(self, instance):
+    def get_created_at(self, instance:Board):
         return instance.created_at
 
     # 조회수
-    def get_view_count(self, instance):
+    def get_view_count(self, instance:Board):
         return instance.view_count
+
+    id = serializers.SerializerMethodField(
+        help_text='게시판 id'
+    )
 
     author = serializers.SerializerMethodField(
         help_text='작성자'
@@ -97,8 +110,9 @@ class BoardListItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = Board
         fields = (
+            'id',
             'author',
-            'guest_author'
+            'guest_author',
             'title',
             'created_at',
             'view_count'
@@ -165,11 +179,6 @@ class BoardRegisterRequestSerializer(serializers.Serializer):
         게시판 등록 요청 시리얼라이저
     '''
 
-    class BoardCategoryEnum(EnumChoice):
-        NOTICE = '공지사항'
-        GENERAL = '일반 게시판'
-        QNA = '질문 게시판'
-
     category = serializers.ChoiceField(
         choices=BoardCategoryEnum.get_choice(),
         help_text='카테고리',
@@ -207,3 +216,88 @@ class BoardRegisterRequestSerializer(serializers.Serializer):
         allow_empty=True,
         default=list
     )
+
+# 게시판 상세 보기 요청 시리얼라이저
+class BoardDetailRequestSerializer(serializers.Serializer):
+    id = serializers.IntegerField(
+        help_text='게시판 id',
+        required=True,
+        min_value=1
+    )
+
+    category = serializers.ChoiceField(
+        choices=BoardCategoryEnum.get_choice(),
+        help_text='카테고리',
+        default='GENERAL'
+    )
+
+# 게시판 상세 보기 응답 시리얼라이저
+class BoardDetailResponseSerializer(ResponseBaseSerializer):
+    class BoardDetailResponseBody(serializers.ModelSerializer):
+
+        def get_id(self, instance: Board):
+            return instance.pk
+
+        # 작성자
+        def get_author(self, instance: Board):
+            if not instance.author.name:
+                return None
+            else:
+                return instance.author.name
+
+        # 작성자 비회원
+        def get_guest_author(self, instance: Board):
+            if not instance.guest_author:
+                return None
+            else:
+                return instance.guest_author
+
+        # 게시글 제목
+        def get_title(self, instance: Board):
+            return instance.title
+
+        # 생성일
+        def get_created_at(self, instance: Board):
+            return instance.created_at
+
+        # 조회수
+        def get_view_count(self, instance: Board):
+            return instance.view_count
+
+        id = serializers.SerializerMethodField(
+            help_text='게시판 id'
+        )
+
+        author = serializers.SerializerMethodField(
+            help_text='작성자'
+        )
+
+        guest_author = serializers.SerializerMethodField(
+            help_text='작성자(비회원)'
+        )
+
+        title = serializers.SerializerMethodField(
+            help_text='제목'
+        )
+
+        created_at = serializers.SerializerMethodField(
+            help_text='생성일'
+        )
+
+        view_count = serializers.SerializerMethodField(
+            help_text='조회수'
+        )
+
+        class Meta:
+            model = Board
+            fields = (
+                'id',
+                'author',
+                'guest_author',
+                'title',
+                'created_at',
+                'view_count'
+            )
+
+
+    result = BoardDetailResponseBody()

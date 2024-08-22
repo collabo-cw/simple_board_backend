@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from core.models import APIResponseHandler
 from board.serializers import BoardListUpRequestSerializer, BoardListUpResponseSerializer, \
-    BoardRegisterRequestSerializer
+    BoardRegisterRequestSerializer, BoardDetailRequestSerializer, BoardDetailResponseSerializer
 from core.utils import calculate_pagination_max_page, set_atomic_transaction
 
 
@@ -166,3 +166,50 @@ def board_register(request: Request):
     return APIResponseHandler.CODE_0000.get_status_response()
 
 # 게시판 상세보기 API
+@swagger_auto_schema(
+    method="POST",
+    request_body=BoardDetailRequestSerializer,
+    responses={
+        status.HTTP_200_OK: BoardDetailResponseSerializer,
+        status.HTTP_400_BAD_REQUEST: APIResponseHandler.CODE_0002.get_status_html() +
+                                     APIResponseHandler.CODE_0003.get_status_html()
+    },
+)
+@api_view(["POST"])
+@set_atomic_transaction
+def board_detail(request: Request):
+    '''
+        게시판 상세 조회 API
+    '''
+    # 요청 데이터 검증
+    request_validator = BoardDetailRequestSerializer(data=request.data)
+    if not request_validator.is_valid():
+        print('양식에 맞지 않습니다.')
+        print(request_validator.errors)
+        return APIResponseHandler.CODE_0002.get_status_response()
+    print(request_validator.validated_data)
+
+    id = request_validator.data.get('id')
+    category = request_validator.data.get('category')
+
+    # 게시판 정보가 있는지 확인
+
+    from .models import Board
+    board_qs = Board.objects.filter(
+        id=id,
+        category=category,
+        is_activate=True
+    )
+    if not board_qs.exists():
+        return APIResponseHandler.CODE_0003.get_status_response()
+
+    board = board_qs.first()
+    # 게시판을 클릭한것과 마찬가지 이므로 조회수 +1 해준다
+    board.view_count += board.view_count
+    board.save(update_fields=['view_count'])
+
+    return APIResponseHandler.create_response(
+        status_object=APIResponseHandler.CODE_0000,
+        serializing_class=BoardDetailResponseSerializer,
+        instance=board
+    )
