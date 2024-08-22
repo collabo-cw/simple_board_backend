@@ -35,7 +35,6 @@ class BoardListUpRequestSerializer(serializers.Serializer):
         min_value=10,
         max_value=100,
         help_text='페이지 사이즈',
-        required=True,
         default=10
     )
 
@@ -49,7 +48,6 @@ class BoardListUpRequestSerializer(serializers.Serializer):
 
     desc = serializers.BooleanField(
         help_text='역순 flag',
-        required=True,
         default=False,
     )
 

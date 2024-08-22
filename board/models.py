@@ -6,15 +6,16 @@ from user.models import User
 
 class Board(models.Model):
 
-    class category_choices(EnumChoice):
-        notice = '공지사항',
-        general = '일반 게시판',
-        qna = '질문 게시판',
+    category_choices = (
+        ('notice', '공지사항'),
+        ('general', '일반 게시판'),
+        ('qna', '질문 게시판'),
+    )
 
     # 카테고리
     category = models.CharField(
         max_length=10,
-        choices=category_choices.get_choice(),
+        choices=category_choices,
         verbose_name="카테고리",
         help_text="카테고리"
     )
