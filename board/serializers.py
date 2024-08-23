@@ -38,10 +38,8 @@ class BoardListUpRequestSerializer(serializers.Serializer):
         default=10
     )
 
-    categorize_type = serializers.ListSerializer(
-        child=serializers.ChoiceField(
-            choices=CategorizeEnum.get_choice()
-        ),
+    categorize_type = serializers.ChoiceField(
+        choices=CategorizeEnum.get_choice(),
         help_text='분류 기준',
         required=True,
     )
@@ -184,19 +182,22 @@ class BoardRegisterRequestSerializer(serializers.Serializer):
 
     user_id = serializers.UUIDField(
         help_text='유저 UUID',
-        allow_null=True
+        allow_null=True,
+        required=True
     )
 
     guest_id = serializers.CharField(
         max_length=10,
         help_text='비회원 작성자',
-        allow_null=True
+        allow_null=True,
+        required=True
     )
 
     password = serializers.CharField(
         max_length=15,
         help_text='비회원 암호',
-        allow_null=True
+        allow_null=True,
+        required=True
     )
 
     title = serializers.CharField(
