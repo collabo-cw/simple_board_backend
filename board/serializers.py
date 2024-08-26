@@ -3,7 +3,7 @@ from rest_framework import serializers
 
 from core.serializers import ResponseBaseSerializer
 from core.utils import EnumChoice, validate_file_extension
-from .models import Board
+from .models import Board, Attachment
 
 
 class BoardCategoryEnum(EnumChoice):
@@ -183,21 +183,21 @@ class BoardRegisterRequestSerializer(serializers.Serializer):
     user_id = serializers.UUIDField(
         help_text='유저 UUID',
         allow_null=True,
-        required=True
+        required=False
     )
 
     guest_id = serializers.CharField(
         max_length=10,
         help_text='비회원 작성자',
         allow_null=True,
-        required=True
+        required=False
     )
 
     password = serializers.CharField(
         max_length=15,
         help_text='비회원 암호',
         allow_null=True,
-        required=True
+        required=False
     )
 
     title = serializers.CharField(
@@ -230,9 +230,20 @@ class BoardDetailRequestSerializer(serializers.Serializer):
         default='GENERAL'
     )
 
+# 게시판 첨부파일 아이템 시리얼라이저
+class BoardDetailAttachmentItemSerializer(serializers.Serializer):
+    def get_file(self, instance:Attachment):
+        return instance.file
+
+    def get_order(self, instance:Attachment):
+        return instance.order
+
+    file = serializers.SerializerMethodField()
+    order = serializers.SerializerMethodField()
+
 # 게시판 상세 보기 응답 시리얼라이저
 class BoardDetailResponseSerializer(ResponseBaseSerializer):
-    class BoardDetailResponseBody(serializers.ModelSerializer):
+    class BoardDetailResponseBody(serializers.Serializer):
 
         def get_id(self, instance: Board):
             return instance.pk
@@ -263,6 +274,23 @@ class BoardDetailResponseSerializer(ResponseBaseSerializer):
         def get_view_count(self, instance: Board):
             return instance.view_count
 
+        # 첨부파일
+        @swagger_serializer_method(
+            serializer_or_field=BoardDetailAttachmentItemSerializer(many=True)
+        )
+        def get_file_item(self, instance: Board):
+            from .models import Attachment
+            # 첨부파일이 있는지 확인
+            attachment = Attachment.objects.filter(
+                board=instance.pk
+            )
+            return BoardDetailAttachmentItemSerializer(
+                attachment,
+                many=True,
+                context=self.context,
+            ).data
+
+
         id = serializers.SerializerMethodField(
             help_text='게시판 id'
         )
@@ -287,16 +315,8 @@ class BoardDetailResponseSerializer(ResponseBaseSerializer):
             help_text='조회수'
         )
 
-        class Meta:
-            model = Board
-            fields = (
-                'id',
-                'author',
-                'guest_author',
-                'title',
-                'created_at',
-                'view_count'
-            )
-
+        file_item = serializers.SerializerMethodField(
+            help_text='첨부 파일'
+        )
 
     result = BoardDetailResponseBody()
