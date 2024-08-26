@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from core.serializers import ResponseBaseSerializer
 from .models import User
 
 class UserSignUpRequestSerializer(serializers.Serializer):
@@ -59,3 +60,30 @@ class UserSignUpRequestSerializer(serializers.Serializer):
             'birthday': self.validated_data.get('birthday').strftime('%Y%m%d'),
             'gender': self.validated_data.get('gender'),
         }
+
+
+# 유저 로그인 요청 시리얼라이저
+class UserSignInRequestSerializer(serializers.Serializer):
+    # 유저 이메일
+    email = serializers.EmailField()
+    # 유저 비밀번호
+    password = serializers.CharField()
+
+# 유저 로그인 응답 시리얼라이저
+class UserSignInResponseSerializer(ResponseBaseSerializer):
+    class UserSignInResponseBody(serializers.Serializer):
+        # 액세스 토큰
+        def get_access_token(self, instance):
+            return self.context.get('access_token')
+        # 리프레쉬 토큰
+        def get_refresh_token(self, instance):
+            return self.context.get('refresh_token')
+        # user uuid
+        def get_user_uuid(self, instance:User):
+            return instance.external_uuid
+
+        access_token = serializers.SerializerMethodField()
+        refresh_token = serializers.SerializerMethodField()
+        user_uuid = serializers.SerializerMethodField()
+
+    result = UserSignInResponseBody()
