@@ -96,7 +96,6 @@ def board_list_up(request: Request):
     )
 
 # 게시판 등록 API
-
 @swagger_auto_schema(
     method="POST",
     request_body=BoardRegisterRequestSerializer,
@@ -136,6 +135,7 @@ def board_register(request: Request):
         external_uuid=user_id,
         is_active=True
     )
+    # 유저가 있으면
     if user_qs.exists():
         user = user_qs.first()
         board_instance = Board.objects.create(
@@ -145,12 +145,12 @@ def board_register(request: Request):
             content=content,
         )
     else:
-        if not guest_id or password:
+        if not guest_id or not password:
             return APIResponseHandler.CODE_0001.get_status_response()
         board_instance = Board.objects.create(
             category=category,
             guest_author=guest_id,
-            password=password,
+            guest_password=password,
             title=title,
             content=content,
         )

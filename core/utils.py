@@ -48,6 +48,6 @@ def set_atomic_transaction(func):
             print('에러가 발생하여 DB작업 초기화 : ', e)
             transaction.savepoint_rollback(initial_savepoint)
             from core.models import APIResponseHandler
-            return APIResponseHandler.CODE_0008.get_error_response()
+            return APIResponseHandler.CODE_0008.get_status_response()
 
     return decorator
