@@ -1,0 +1,30 @@
+name: Code Review
+
+on:
+  push:
+    branches:
+      - main  # main 브랜치에 푸시될 때 실행
+      - '**'  # 모든 브랜치에서 푸시가 발생할 때 실행
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        pip install transformers torch accelerate requests PyGithub
+
+    - name: Run Code Review
+      env:
+        GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+      run: |
+        python review_script.py
