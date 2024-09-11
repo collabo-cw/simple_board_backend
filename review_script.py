@@ -28,7 +28,7 @@ for file in commit.files:
         inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
 
         # 모델 실행 및 리뷰 생성
-        outputs = model.generate(**inputs, max_length=200, num_beams=1, early_stopping=True)
+        outputs = model.generate(**inputs, max_new_tokens=200, num_beams=1, early_stopping=True)
         review_feedback = tokenizer.decode(outputs[0], skip_special_tokens=True)
 
         # 커밋에 리뷰 코멘트 추가
