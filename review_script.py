@@ -13,7 +13,7 @@ repo = g.get_repo(REPO_NAME)
 commit = repo.get_commit(COMMIT_SHA)
 
 # Mistral 7B 모델 로드
-model_name = "mistralai/Mistral-7B"
+model_name = "mistralai/Mistral-7B-v0.1"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForCausalLM.from_pretrained(model_name, device_map="auto")
 
