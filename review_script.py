@@ -14,8 +14,9 @@ commit = repo.get_commit(COMMIT_SHA)
 
 # Mistral 7B 모델 로드
 model_name = "mistralai/Mistral-7B-v0.1"
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModelForCausalLM.from_pretrained(model_name, device_map="auto")
+access_token = os.getenv('HF_TOKEN')
+tokenizer = AutoTokenizer.from_pretrained(model_name, use_auth_token=access_token)
+model = AutoModelForCausalLM.from_pretrained(model_name, device_map="auto", use_auth_token=access_token)
 
 # 변경된 파일 읽기 및 코드 리뷰 요청
 for file in commit.files:
