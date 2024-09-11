@@ -1,11 +1,11 @@
-name: Code Review
+name: Code Review on Push
 
 on:
   push:
     branches:
-      - main
+      - main  # main 브랜치에 푸시될 때 실행
     paths:
-      - '**/*.py'
+      - '**/*.py'  # Python 파일이 변경된 경우에만 실행
 
 jobs:
   review:
@@ -22,11 +22,11 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -r requirements.txt
+          pip install replicate requests
 
       - name: Run Code Review
         env:
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPLICATE_API_KEY: ${{ secrets.REPLICATE_API_KEY }}  # Replicate API 키를 GitHub Secrets에 저장
+          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
         run: |
           python review_script.py

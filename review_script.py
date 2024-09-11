@@ -1,35 +1,35 @@
 import os
 from github import Github
-from transformers import AutoTokenizer, AutoModelForCausalLM
+import replicate
 
 # GitHub 액세스 토큰 설정
-GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')
-REPO_NAME = os.getenv('GITHUB_REPOSITORY')
-COMMIT_SHA = os.getenv('GITHUB_SHA')
+GITHUB_TOKEN = os.getenv('GIT_TOKEN')
+REPLICATE_API_KEY = os.getenv('REPLICATE_API_KEY')
 
 # GitHub 클라이언트 초기화
 g = Github(GITHUB_TOKEN)
-repo = g.get_repo(REPO_NAME)
-commit = repo.get_commit(COMMIT_SHA)
+repo_name = os.getenv('GITHUB_REPOSITORY')
+commit_sha = os.getenv('GITHUB_SHA')
+repo = g.get_repo(repo_name)
+commit = repo.get_commit(commit_sha)
 
-# Mistral 7B 모델 로드
-model_name = "mistralai/Mistral-7B-v0.1"
-access_token = os.getenv('HF_TOKEN')
-tokenizer = AutoTokenizer.from_pretrained(model_name, token=access_token)
-model = AutoModelForCausalLM.from_pretrained(model_name, device_map="auto", token=access_token)
+# Replicate 클라이언트 초기화
+client = replicate.Client(api_token=REPLICATE_API_KEY)
+model = "mistralai/Mistral-7B-v0.1"  # Mistral 7B 모델
 
-# 변경된 파일 읽기 및 코드 리뷰 요청
+# 변경된 파일들에 대해 코드 리뷰 수행
 for file in commit.files:
     if file.filename.endswith('.py'):  # Python 파일만 리뷰
         code = repo.get_contents(file.filename, ref=commit.sha).decoded_content.decode('utf-8')
 
-        # 코드 리뷰 프롬프트 작성
-        prompt = f"다음 Python 코드를 리뷰하고 개선점을 제안해 주세요:\n\n{code}\n\n리뷰 피드백:"
-        inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+        # 코드 리뷰 요청을 위한 프롬프트 작성
+        prompt = f"다음 Python 코드를 리뷰하고 개선할 점을 제안해 주세요:\n\n{code}"
 
-        # 모델 실행 및 리뷰 생성
-        outputs = model.generate(**inputs, max_new_tokens=200, num_beams=3, early_stopping=True)
-        review_feedback = tokenizer.decode(outputs[0], skip_special_tokens=True)
+        # Replicate API 호출하여 리뷰 결과 생성
+        output = client.run(
+            model,
+            input={"prompt": prompt, "new_max_tokens": 200}
+        )
 
-        # 커밋에 리뷰 코멘트 추가
-        commit.create_comment(f"### 코드 리뷰 피드백 for `{file.filename}`:\n\n{review_feedback}")
+        # GitHub 커밋에 리뷰 코멘트 추가
+        commit.create_comment(f"### 코드 리뷰 피드백 for `{file.filename}`:\n\n{output}")
