@@ -27,6 +27,6 @@ jobs:
       - name: Run Code Review
         env:
           REPLICATE_API_KEY: ${{ secrets.REPLICATE_API_KEY }}  # Replicate API 키를 GitHub Secrets에 저장
-          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+          GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
         run: |
           python review_script.py
