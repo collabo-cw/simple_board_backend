@@ -205,7 +205,7 @@ def board_detail(request: Request):
 
     board = board_qs.first()
     # 게시판을 클릭한것과 마찬가지 이므로 조회수 +1 해준다
-    board.view_count += board.view_count
+    board.view_count += 1
     board.save(update_fields=['view_count'])
 
     return APIResponseHandler.create_response(

@@ -250,7 +250,7 @@ class BoardDetailResponseSerializer(ResponseBaseSerializer):
 
         # 작성자
         def get_author(self, instance: Board):
-            if not instance.author.name:
+            if not instance.author:
                 return None
             else:
                 return instance.author.name
