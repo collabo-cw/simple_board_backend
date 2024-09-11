@@ -26,5 +26,6 @@ jobs:
     - name: Run Code Review
       env:
         GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+        HF_TOKEN: ${{ secrets.HF_TOKEN }}
       run: |
         python review_script.py
