@@ -15,8 +15,8 @@ commit = repo.get_commit(COMMIT_SHA)
 # Mistral 7B 모델 로드
 model_name = "mistralai/Mistral-7B-v0.1"
 access_token = os.getenv('HF_TOKEN')
-tokenizer = AutoTokenizer.from_pretrained(model_name, use_auth_token=access_token)
-model = AutoModelForCausalLM.from_pretrained(model_name, device_map="auto", use_auth_token=access_token)
+tokenizer = AutoTokenizer.from_pretrained(model_name, token=access_token)
+model = AutoModelForCausalLM.from_pretrained(model_name, device_map="auto", token=access_token)
 
 # 변경된 파일 읽기 및 코드 리뷰 요청
 for file in commit.files:
@@ -28,7 +28,7 @@ for file in commit.files:
         inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
 
         # 모델 실행 및 리뷰 생성
-        outputs = model.generate(**inputs, max_length=200)
+        outputs = model.generate(**inputs, max_length=200, num_beams=1, early_stopping=True)
         review_feedback = tokenizer.decode(outputs[0], skip_special_tokens=True)
 
         # 커밋에 리뷰 코멘트 추가
