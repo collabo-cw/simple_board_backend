@@ -3,11 +3,11 @@ from github import Github
 import replicate
 
 # GitHub 액세스 토큰 설정
-GITHUB_TOKEN = os.getenv('GIT_TOKEN')
+GIT_TOKEN = os.getenv('GIT_TOKEN')
 REPLICATE_API_KEY = os.getenv('REPLICATE_API_KEY')
 
 # GitHub 클라이언트 초기화
-g = Github(GITHUB_TOKEN)
+g = Github(GIT_TOKEN)
 repo_name = os.getenv('GITHUB_REPOSITORY')
 commit_sha = os.getenv('GITHUB_SHA')
 repo = g.get_repo(repo_name)
