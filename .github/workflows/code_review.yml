@@ -22,7 +22,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install replicate requests
+          pip install PyGithub replicate requests
 
       - name: Run Code Review
         env:
