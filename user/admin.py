@@ -6,3 +6,4 @@ from .models import User
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     model = User
+    list_display = ('name', 'updated_at', 'created_at')
