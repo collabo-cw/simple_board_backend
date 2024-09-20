@@ -28,7 +28,7 @@ for file in commit.files:
         # Replicate API 호출하여 리뷰 결과 생성
         output = client.run(
             model,
-            input={"prompt": prompt, "new_max_tokens": 200}
+            input={"prompt": prompt, "max_new_tokens": 200}
         )
 
         # GitHub 커밋에 리뷰 코멘트 추가
