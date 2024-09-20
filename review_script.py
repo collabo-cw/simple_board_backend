@@ -32,7 +32,8 @@ for file in commit.files:
         )
 
         # 가독성
-        formatted_output = " ".join(output).replace(". ", ".\n")
+        formatted_output = " ".join(output).replace(". ", ". ")  # 기본 공백으로 유지
+        formatted_output = formatted_output.replace(". ", ".\n\n")  # 문장 끝에 개행 추가
 
         # GitHub 커밋에 리뷰 코멘트 추가
         commit.create_comment(f"### 코드 리뷰 피드백 for `{file.filename}`:\n\n{formatted_output}")
