@@ -28,11 +28,11 @@ for file in commit.files:
         # Replicate API 호출하여 리뷰 결과 생성
         output = client.run(
             model,
-            input={"prompt": prompt, "max_new_tokens": 200}
+            input={"prompt": prompt, "max_new_tokens": 500}
         )
 
         # 가독성
-        formatted_output = "\n".join(output)
+        formatted_output = " ".join(output).replace(". ", ".\n")
 
         # GitHub 커밋에 리뷰 코멘트 추가
         commit.create_comment(f"### 코드 리뷰 피드백 for `{file.filename}`:\n\n{formatted_output}")
