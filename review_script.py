@@ -23,7 +23,7 @@ for file in commit.files:
         code = repo.get_contents(file.filename, ref=commit.sha).decoded_content.decode('utf-8')
 
         # 코드 리뷰 요청을 위한 프롬프트 작성
-        prompt = f"다음 Python 코드를 리뷰하고 개선할 점을 제안해 주세요:\n\n{code}"
+        prompt = f"다음 Python 코드를 리뷰하고 개선할 점을 한국어로 제안해 주세요:\n\n{code}"
 
         # Replicate API 호출하여 리뷰 결과 생성
         output = client.run(
@@ -31,5 +31,8 @@ for file in commit.files:
             input={"prompt": prompt, "max_new_tokens": 200}
         )
 
+        # 가독성
+        formatted_output = "\n".join(output)
+
         # GitHub 커밋에 리뷰 코멘트 추가
-        commit.create_comment(f"### 코드 리뷰 피드백 for `{file.filename}`:\n\n{output}")
+        commit.create_comment(f"### 코드 리뷰 피드백 for `{file.filename}`:\n\n{formatted_output}")
