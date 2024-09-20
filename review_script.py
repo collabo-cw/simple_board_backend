@@ -15,7 +15,7 @@ commit = repo.get_commit(commit_sha)
 
 # Replicate 클라이언트 초기화
 client = replicate.Client(api_token=REPLICATE_API_KEY)
-model = "mistralai/Mistral-7B-v0.1"  # Mistral 7B 모델
+model = "mistralai/Mistral-7b-v0.1"  # Mistral 7B 모델
 
 # 변경된 파일들에 대해 코드 리뷰 수행
 for file in commit.files:
