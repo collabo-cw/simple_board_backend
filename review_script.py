@@ -23,7 +23,7 @@ for file in commit.files:
         code = repo.get_contents(file.filename, ref=commit.sha).decoded_content.decode('utf-8')
 
         # 코드 리뷰 요청을 위한 프롬프트 작성
-        prompt = f"다음 Python 코드를 보고 개선할 점을 제안해 주세요:\n\n{code}"
+        prompt = f"다음 Python 코드를 보고 개선할 점을 한국어로 제안해 주세요:\n\n{code}"
 
         # Replicate API 호출하여 리뷰 결과 생성
         output = client.run(
@@ -33,10 +33,7 @@ for file in commit.files:
 
         # 가독성
         # output을 문자열로 자연스럽게 연결
-        formatted_output = " ".join(output).replace(". ", ".\n\n")  # 문장 끝에 개행 추가
-
-        # 불필요한 공백 제거 및 자연스럽게 조정
-        formatted_output = formatted_output.replace("  ", " ").replace(" .", ".").replace(" ,", ",")
+        formatted_output = " ".join(output)
 
         # GitHub 커밋에 리뷰 코멘트 추가
         commit.create_comment(f"### 코드 리뷰 피드백 for `{file.filename}`:\n\n{formatted_output}")
